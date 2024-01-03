@@ -2209,6 +2209,12 @@ config_init_stdio(const PyConfig *config)
     _setmode(fileno(stderr), O_BINARY);
 #endif
 
+    char *unbuf = getenv("PHIL_SUPER_UNBUFFERED");
+    if(unbuf){
+        setvbuf(stdin,  (char *)NULL, _IONBF, 0);
+        setvbuf(stdout, (char *)NULL, _IONBF, 0);
+        setvbuf(stderr, (char *)NULL, _IONBF, 0);
+    }
     if (!config->buffered_stdio) {
 #ifdef HAVE_SETVBUF
         setvbuf(stdin,  (char *)NULL, _IONBF, BUFSIZ);
