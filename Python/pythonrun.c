@@ -27,6 +27,7 @@
 #include "token.h"                // INDENT
 #include "errcode.h"              // E_EOF
 #include "marshal.h"              // PyMarshal_ReadLongFromFile()
+#include "string.h"
 
 #ifdef MS_WINDOWS
 #  include "malloc.h"             // alloca()
@@ -118,13 +119,18 @@ _PyRun_InteractiveLoopObject(FILE *fp, PyObject *filename, PyCompilerFlags *flag
 
     PyThreadState *tstate = _PyThreadState_GET();
     PyObject *v = _PySys_GetAttr(tstate, &_Py_ID(ps1));
+    // char ps1[20];
+    // snprintf(ps1, 20, 
+    // __ps1_color = '255;212;59'
+    // sys.ps1 = f"\x01\033[38;2;255;212;59m\x02\u2588\u2588\ue0b0\x01\033[0m\x02 "
+    // sys.ps2 = f"\001\033[38;2;75;139;190m\002\u2588\u2588\ue0b0\001\033[0m\002 "
     if (v == NULL) {
-        _PySys_SetAttr(&_Py_ID(ps1), v = PyUnicode_FromString(">>> "));
+        _PySys_SetAttr(&_Py_ID(ps1), v = PyUnicode_FromString("\x01\033[38;2;255;212;59m\x02\u2588\u2588\ue0b0\x01\033[0m\x02 "));
         Py_XDECREF(v);
     }
     v = _PySys_GetAttr(tstate, &_Py_ID(ps2));
     if (v == NULL) {
-        _PySys_SetAttr(&_Py_ID(ps2), v = PyUnicode_FromString("... "));
+        _PySys_SetAttr(&_Py_ID(ps2), v = PyUnicode_FromString("\001\033[38;2;75;139;190m\002\u2588\u2588\ue0b0\001\033[0m\002 "));
         Py_XDECREF(v);
     }
 
